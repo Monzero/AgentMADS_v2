@@ -2,11 +2,11 @@
 
 A sophisticated multi-agent AI system for automated corporate governance evaluation using Large Language Models (LLMs) and Retrieval-Augmented Generation (RAG).
 
-## 🎯 Overview
+## Overview
 
 AgentEval transforms corporate governance assessment through a specialized five-agent architecture that processes unstructured corporate documents to generate standardized governance scores with detailed justifications and source citations.
 
-## ✨ Key Features
+## Key Features
 
 - **Multi-Agent Architecture**: Specialized agents for input validation, question generation, research, output validation, and scoring
 - **Hybrid Retrieval System**: Combines BM25 keyword search with semantic embeddings for comprehensive document analysis
@@ -16,7 +16,7 @@ AgentEval transforms corporate governance assessment through a specialized five-
 - **Quality Guardrails**: Deterministic validation and hallucination detection
 - **Explainable Scoring**: Detailed justifications with preserved source citations
 
-## 🏗️ Architecture
+## Architecture
 
 ```
                           ┌─────────────────┐
@@ -57,7 +57,7 @@ AgentEval transforms corporate governance assessment through a specialized five-
                           └─────────────────┘
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -121,7 +121,7 @@ print(f"Score: {result['scoring']['score']}/2")
 streamlit run app.py
 ```
 
-## 📊 Usage Examples
+## Usage Examples
 
 ### Command Line Interface
 
@@ -156,7 +156,7 @@ config.agent_temperatures = {
 }
 ```
 
-## 🔧 Configuration Options
+## Configuration Options
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -166,21 +166,8 @@ config.agent_temperatures = {
 | `chunk_size` | Text chunk size | `1000` |
 | `temperature` | LLM creativity | `0.2` |
 
-## 📈 Performance Metrics
 
-- **Speed**: 20-100x faster than traditional approaches
-- **Accuracy**: High fidelity against expert assessments
-- **Consistency**: Deterministic scoring with low variance
-- **Coverage**: Comprehensive source identification and citation
-
-## 🛡️ Quality Assurance
-
-- **Input Validation**: Topic definition completeness and coherence
-- **Output Validation**: Answer quality, citations, and confidence assessment
-- **Fallback Mechanisms**: Progressive document escalation when needed
-- **Error Handling**: Graceful degradation and comprehensive logging
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── main.py              # Core agentic system
@@ -194,13 +181,13 @@ config.agent_temperatures = {
         └── 96_results/ # Evaluation outputs
 ```
 
-## 🔄 Agent Workflow
+## Agent Workflow
 
 ### Iterative Research Process
 
 1. **Input Validation**: Validates topic definition structure and semantics
 2. **Initial Question**: Generates strategic question based on rubric analysis
-3. **Research Loop** (up to 3 iterations):
+3. **Research Loop** (up to n iterations):
    - Research Agent analyzes documents using hybrid retrieval
    - Output Guardrail validates answer quality
    - Question Agent checks if more information needed
@@ -216,7 +203,7 @@ config.agent_temperatures = {
 - **Output Guardrail**: Deterministic quality validation (No LLM)
 - **Scoring Agent**: Evidence synthesis and scoring (Temperature: 0.1)
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Quick test with default settings
@@ -232,7 +219,7 @@ python main.py --test-all
 python main.py --test-performance
 ```
 
-## 🔧 Advanced Configuration
+## Advanced Configuration
 
 ### Custom LLM Models
 
@@ -262,7 +249,7 @@ config.max_pdf_size_mb = 20        # PDF size limit for direct processing
 config.force_recompute = False     # Clear cache and recompute
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/enhancement`)
@@ -270,11 +257,7 @@ config.force_recompute = False     # Clear cache and recompute
 4. Push to branch (`git push origin feature/enhancement`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📚 Citation
+## Citation
 
 ```bibtex
 @article{shah2024agentevaluation,
@@ -285,20 +268,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 }
 ```
 
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-username/agentevaluation/issues)
-- **Documentation**: See inline code documentation
-- **Contact**: {Monilshah2025, SupriyaJadhav2025}@u.northwestern.edu
-
-## 🏆 Research Highlights
-
-- **First multi-agent system** specifically designed for corporate governance evaluation
-- **20-100x performance improvement** through pre-computation optimization
-- **Hybrid retrieval innovation** combining keyword and semantic search
-- **Quality assurance framework** with dedicated guardrail agents
-- **Explainable AI** with detailed justifications and source citations
-
 ---
 
-**Built with ❤️ by Northwestern University Research Team**
+**Built with ❤️ by Team AgentMADS**
