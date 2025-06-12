@@ -10,7 +10,7 @@ AgentEval transforms corporate governance assessment through a specialized five-
 
 - **Multi-Agent Architecture**: Specialized agents for input validation, question generation, research, output validation, and scoring
 - **Hybrid Retrieval System**: Combines BM25 keyword search with semantic embeddings for comprehensive document analysis
-- **Pre-Computed Optimization**: 20-100x speed improvement through cached chunks and embeddings
+- **Pre-Computed Optimization**: speed improvement through cached chunks and embeddings
 - **PDF Slice Reconstruction**: Preserves document structure including tables and charts
 - **Intelligent Fallback**: Progressive escalation when retrieval methods find insufficient information
 - **Quality Guardrails**: Deterministic validation and hallucination detection
