@@ -1,39 +1,26 @@
-pypdf
-pypdf2
-google.genai
+# Core ML and LLM libraries
+langchain==0.3.25
+langchain-community==0.3.24
+langchain-ollama==0.3.3
+langchain-google-genai==2.0.10
+google-generativeai==0.8.5
+sentence-transformers==4.1.0
 
-ollama
-pymupdf
-langchain-google-genai
-chromadb
-google.generativeai
-langchain_ollama
-nltk
-rank_bm25
-langchain
-langchain_community
-scikit-learn
-tqdm
-reportlab
-langchain-text-splitters
-requests 
-httpx 
-sentence-transformers
-langchain-ollama 
-python-dotenv 
-google-generativeai 
-numpy==1.26.4
+# Vector database and search
+chromadb==1.0.12
+rank-bm25==0.2.2
+
+# PDF processing
+PyMuPDF==1.26.0
+pypdf==5.6.0
+
+# Data processing and analysis
 pandas==2.2.0
-matplotlib==3.8.2
-seaborn==0.13.0
-streamlit
+numpy==1.26.4
 
+# Web framework (for Streamlit app)
+streamlit==1.45.1
+plotly==6.1.2
 
-langchain-community>=0.0.20 
-faiss-cpu>=1.7.0
-python-dotenv>=1.0.0 
-pydantic>=2.0.0 
-networkx>=3.1.0
-asyncio 
-pydantic
-plotly
+# Environment and utilities
+python-dotenv==1.1.0
