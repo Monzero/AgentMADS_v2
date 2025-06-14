@@ -2601,18 +2601,208 @@ class OptimizedAgenticOrchestrator:
         
         print()
     
-def create_sample_topic() -> TopicDefinition:
-    """Create a sample topic for testing"""
-    return TopicDefinition(
-        topic_name="Board Independence",
-        goal="To assess if the board have directors with permanent board seats",
-        guidance="You need to look for the corporate governance report. Find the reappointment date for each board members. If the reppointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appoinment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years  (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information ",
-        scoring_rubric={
-            "0": "if any one of the directors is marked as permanent board members as well as they are not explicitly mentioned to be representatives of lenders.",
-            "1": "if the directors which are marked as permanent board members, but those are representatives of lenders. Remember that usually this case is applicable for financially distressed companies. So unless it is mentioned explicitly that lenders have sent those board members as representative, do not assume so.",
-            "2": "if All directors are marked as non-permanent board members"
+def load_sample_topics():
+    """Load sample topics from JSON file"""
+    try:
+        # Try to load from current directory first
+        json_path = "sample_topics.json"
+        if not os.path.exists(json_path):
+            # Try relative path if not in current directory
+            json_path = os.path.join(os.path.dirname(__file__), "sample_topics.json")
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            
+        # Convert string keys to integers for easier access
+        topics_data = {}
+        for key, value in data["topics"].items():
+            topics_data[int(key)] = value
+            
+        return topics_data
+        
+    except FileNotFoundError:
+        print("⚠️ sample_topics.json file not found. Using fallback topics.")
+        return get_fallback_topics()
+    except json.JSONDecodeError as e:
+        print(f"⚠️ Error parsing sample_topics.json: {e}. Using fallback topics.")
+        return get_fallback_topics()
+    except Exception as e:
+        print(f"⚠️ Unexpected error loading topics: {e}. Using fallback topics.")
+        return get_fallback_topics()
+
+def get_fallback_topics():
+    """Fallback topics in case JSON file is not available"""
+    return {
+        1: {
+            "topic_name": "Board Independence",
+            "goal": "To assess if the board have directors with permanent board seats",
+            "guidance": "Basic evaluation of board member tenure and independence status.",
+            "scoring_rubric": {
+                "0": "Poor board independence",
+                "1": "Moderate board independence", 
+                "2": "Excellent board independence"
+            }
         }
+    }
+
+# def create_sample_topic() -> TopicDefinition:
+#     """Create a sample topic for testing"""
+#     return TopicDefinition(
+#         topic_name="Board Independence",
+#         goal="To assess if the board have directors with permanent board seats",
+#         guidance="You need to look for the corporate governance report. Find the reappointment date for each board members. If the reppointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appoinment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years  (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information ",
+#         scoring_rubric={
+#             "0": "if any one of the directors is marked as permanent board members as well as they are not explicitly mentioned to be representatives of lenders.",
+#             "1": "if the directors which are marked as permanent board members, but those are representatives of lenders. Remember that usually this case is applicable for financially distressed companies. So unless it is mentioned explicitly that lenders have sent those board members as representative, do not assume so.",
+#             "2": "if All directors are marked as non-permanent board members"
+#         }
+#     )
+
+# def create_sample_topic(topic_number: int = 1) -> TopicDefinition:
+#     """Create a sample topic for testing based on topic number (1-5)"""
+    
+#     # Predefined topics mapping
+#     topics_data = {
+#         1: {
+#             "topic_name": "Board Independence",
+#             "goal": "To assess if the board have directors with permanent board seats",
+#             "guidance": "You need to look for the corporate governance report. Find the reappointment date for each board members. If the reappointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appointment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information.",
+#             "scoring_rubric": {
+#                 "0": "if any one of the directors is marked as permanent board members as well as they are not explicitly mentioned to be representatives of lenders.",
+#                 "1": "if the directors which are marked as permanent board members, but those are representatives of lenders. Remember that usually this case is applicable for financially distressed companies. So unless it is mentioned explicitly that lenders have sent those board members as representative, do not assume so.",
+#                 "2": "if All directors are marked as non-permanent board members"
+#             }
+#         },
+#         2: {
+#             "topic_name": "AGM Delay",
+#             "goal": "To evaluate if the company's books were audited quick enough that they could hold AGM quicker after the financial year ended.",
+#             "guidance": "You have to look for two dates. One for financial year end date and second for AGM date. Financial year end date is usually 31st March, but it can be different for some companies. This you can typically find in annual report. Then you need to check the AGM date. AGM date is typically found on notice section of annual report. It is either on first few pages or last few pages of the annual report. Make sure you quote this source in the answer with the page number from which you extract the information. Calculate the gap between financial year end date and AGM date. And answer whether this gap is less than 4 months, between 4 to 6 months or more than 6 months.",
+#             "scoring_rubric": {
+#                 "0": "if the gap between financial year end date and AGM date is more than 6 months",
+#                 "1": "if the gap between financial year end date and AGM date is between 4 to 6 months",
+#                 "2": "if the gap between financial year end date and AGM date is less than 4 months"
+#             }
+#         },
+#         3: {
+#             "topic_name": "POSH Compliance",
+#             "goal": "To assess if the company has a proper POSH (Prevention of Sexual Harassment) policy and compliance",
+#             "guidance": "You have to check two main things. First if the company has publicaly available POSH policy.  Second, check if the company has reported any complaints or cases under this policy in the last financial year. This information is typically found in the corporate governance report or the management discussion and analysis section of the annual report. Make sure you quote this source in the answer with the page number from which you extract the information.",
+#             "scoring_rubric": {
+#                 "0": "if company does not have any publicly disclosed policy regarding prevention of sexual harrassment and the company also has not provided information on the number of sexual harassment incidents.",
+#                 "1": "if company has either publicly disclosed policy regarding prevention of sexual harrassment or the company has provided information on the number of sexual harassment incidents.",
+#                 "2": "if company has both publicly disclosed policy regarding prevention of sexual harrassment and the company has provided information on the number of sexual harassment incidents."
+#             }
+#         },
+#         4: {
+#             "topic_name": "Related Party Transactions Oversight",
+#             "goal": "To evaluate the governance framework for managing related party transactions",
+#             "guidance": "Examine the corporate governance policies and annual report disclosures regarding related party transactions. Look for information about the approval process, committee oversight, materiality thresholds, and disclosure practices. Check if there's a clear policy for identifying, evaluating, and approving related party transactions. Verify if the audit committee or independent directors have proper oversight role. Also assess the quality of disclosures about actual related party transactions during the year. Make sure to provide specific page citations.",
+#             "scoring_rubric": {
+#                 "0": "if there are inadequate policies for related party transaction oversight or poor disclosure practices",
+#                 "1": "if there are basic policies and oversight mechanisms but with some gaps in process or disclosure quality",
+#                 "2": "if there are comprehensive policies, strong oversight by independent committees, and transparent disclosures"
+#             }
+#         },
+#         5: {
+#             "topic_name": "Women representation in workforce",
+#             "goal": "To assess if company has sufficient women representation in workforce",
+#             "guidance": "You need to look for percentage of women in total workforce. This information is typically found in the corporate governance report or the annual report. If direct ratio is not given, try to look for total women employees and total number of employees and calculate ratio yourself. Make sure you quote this source in the answer with the page number from which you extract the information.",
+#             "scoring_rubric": {                                                 
+#                 "0": "if there is no such disclosure or the percentage of women in workforce is less than 10%",
+#                 "1": "if percentage of  women in workforce is between 10% to 30%",
+#                 "2": "if percentage of  women in workforce is more than 30%"
+#             }
+#         }
+#     }
+    
+#     # Validate topic number
+#     if topic_number not in topics_data:
+#         print(f"⚠️ Invalid topic number {topic_number}. Available topics: 1-5. Defaulting to topic 1.")
+#         topic_number = 1
+    
+#     # Get the selected topic data
+#     topic_data = topics_data[topic_number]
+    
+#     print(f"📋 Selected Topic {topic_number}: {topic_data['topic_name']}")
+    
+#     return TopicDefinition(
+#         topic_name=topic_data["topic_name"],
+#         goal=topic_data["goal"],
+#         guidance=topic_data["guidance"],
+#         scoring_rubric=topic_data["scoring_rubric"]
+#     )
+
+def create_sample_topic(topic_number: int = 1) -> TopicDefinition:
+    """Create a sample topic for testing based on topic number (1-5)"""
+    
+    # Load topics from JSON file
+    topics_data = load_sample_topics()
+    
+    # Validate topic number
+    if topic_number not in topics_data:
+        available_topics = list(topics_data.keys())
+        print(f"⚠️ Invalid topic number {topic_number}. Available topics: {available_topics}. Defaulting to topic 1.")
+        topic_number = 1
+    
+    # Get the selected topic data
+    topic_data = topics_data[topic_number]
+    
+    print(f"📋 Selected Topic {topic_number}: {topic_data['topic_name']}")
+    
+    return TopicDefinition(
+        topic_name=topic_data["topic_name"],
+        goal=topic_data["goal"],
+        guidance=topic_data["guidance"],
+        scoring_rubric=topic_data["scoring_rubric"]
     )
+
+def list_available_topics() -> None:
+    """Display all available sample topics"""
+    try:
+        topics_data = load_sample_topics()
+        
+        print("📚 Available Sample Topics:")
+        for num, topic_data in topics_data.items():
+            print(f"   {num}. {topic_data['topic_name']}")
+        print()
+        
+    except Exception as e:
+        print(f"⚠️ Error loading topics for display: {e}")
+        print("📚 Available Sample Topics:")
+        print("   1. Board Independence (fallback)")
+        print()
+
+def get_user_topic_choice() -> int:
+    """Get topic choice from user with validation"""
+    print_section("TOPIC SELECTION", color=Colors.OKBLUE)
+    
+    # Show available topics
+    list_available_topics()
+    
+    # Get available topic numbers
+    topics_data = load_sample_topics()
+    available_numbers = list(topics_data.keys())
+    
+    while True:
+        try:
+            choice = input(f"🔍 Please select a topic number ({min(available_numbers)}-{max(available_numbers)}): ").strip()
+            
+            if not choice:
+                print("⚠️ Please enter a topic number.")
+                continue
+                
+            topic_num = int(choice)
+            
+            if topic_num in available_numbers:
+                return topic_num
+            else:
+                print(f"⚠️ Please enter a number from: {available_numbers}")
+                
+        except ValueError:
+            print("⚠️ Please enter a valid number.")
+        except KeyboardInterrupt:
+            print("\n\n👋 Goodbye!")
+            sys.exit(0)
 
 def save_results(result: Dict[str, Any], config: OptimizedConfig):
     """Save evaluation results to file"""
@@ -2685,7 +2875,7 @@ def save_summary_csv(result: Dict[str, Any], config: OptimizedConfig):
     except Exception as e:
         logger.error(f"Error saving summary CSV: {e}")
 
-def test_optimization_performance(company: str = "SHREECEM"):
+def test_optimization_performance(company: str = "TATAMOTORS"):
     """Test and compare optimized vs non-optimized performance"""
     
     print_section("OPTIMIZATION PERFORMANCE TEST", 
@@ -2740,7 +2930,7 @@ def test_optimization_performance(company: str = "SHREECEM"):
         print(f"   • Fast semantic search with pre-computed vectors")
         print(f"   • Intelligent caching system")
 
-def test_all_retrieval_methods_optimized(company: str = "SHREECEM"):
+def test_all_retrieval_methods_optimized(company: str = "TATAMOTORS"):
     """Test all retrieval methods with optimization"""
     
     retrieval_methods = ["hybrid", "bm25", "vector", "direct"]
@@ -2803,7 +2993,7 @@ def main():
             test_optimization_performance()
         elif sys.argv[1] == "--method" and len(sys.argv) > 2:
             # Test specific method
-            company = "SHREECEM"
+            company = "TATAMOTORS"
             method = sys.argv[2]
             
             print_section("OPTIMIZED SINGLE METHOD TEST", 
@@ -2813,7 +3003,10 @@ def main():
             config.retrieval_method = method
             
             orchestrator = OptimizedAgenticOrchestrator(config)
-            topic = create_sample_topic()
+            
+            # Get topic choice from user - NOW USES JSON
+            topic_number = get_user_topic_choice()  # This function now loads from JSON
+            topic = create_sample_topic(topic_number)  # This function now loads from JSON
             
             result = orchestrator.evaluate_topic(topic)
             
@@ -2828,20 +3021,55 @@ def main():
                 save_results(result, config)
             else:
                 print_section("TEST FAILED", result.get('error'), Colors.FAIL)
+        elif sys.argv[1] == "--help":
+            print_section("USAGE INSTRUCTIONS")
+            print("  python main.py                                   # Interactive topic selection with hybrid method")
+            print("  python main.py --test-all                        # Test all optimized methods")
+            print("  python main.py --test-performance                # Performance comparison")
+            print("  python main.py --method hybrid                   # Test specific optimized method with topic selection")
+            print("  python main.py --method bm25                     # etc...")
+            print("  python main.py --help                            # Show this help message")
         else:
             print_section("USAGE INSTRUCTIONS")
-            print("  python optimized_agentic.py --test-all           # Test all optimized methods")
-            print("  python optimized_agentic.py --test-performance   # Performance comparison")
-            print("  python optimized_agentic.py --method hybrid      # Test specific optimized method")
-            print("  python optimized_agentic.py --method bm25        # etc...")
+            print("  python main.py                                   # Interactive topic selection with hybrid method")
+            print("  python main.py --test-all                        # Test all optimized methods")
+            print("  python main.py --test-performance                # Performance comparison")
+            print("  python main.py --method hybrid                   # Test specific optimized method with topic selection")
+            print("  python main.py --method bm25                     # etc...")
+            print("  python main.py --help                            # Show this help message")
     else:
-        # Default: test optimized hybrid method
-        print_section("DEFAULT OPTIMIZED HYBRID TEST", color=Colors.HEADER)
+        # Default: interactive topic selection with optimized hybrid method
+        print_section("INTERACTIVE TOPIC EVALUATION", color=Colors.HEADER)
         
-        config = OptimizedConfig("SHREECEM")
+        config = OptimizedConfig("TATAMOTORS")
         orchestrator = OptimizedAgenticOrchestrator(config)
-        topic = create_sample_topic()
         
+        # UPDATED PART: Now uses JSON-based topic loading with better error handling
+        try:
+            topic_user_choice = input("Choose a topic to evaluate (1-5) or type 'list' to see available topics: ").strip()
+            if topic_user_choice.lower() == 'list':
+                list_available_topics()  # This function now loads from JSON
+                topic_user_choice = input("Enter topic number: ").strip()
+            
+            topic_number = int(topic_user_choice)
+            
+            # Load available topics to validate input
+            available_topics = load_sample_topics()  # NEW: Load from JSON
+            if topic_number not in available_topics:
+                available_numbers = list(available_topics.keys())
+                print(f"⚠️ Invalid topic number. Available topics: {available_numbers}. Defaulting to topic 1.")
+                topic_number = 1
+                
+            topic = create_sample_topic(topic_number)  # This function now loads from JSON
+            
+        except ValueError:
+            print("⚠️ Invalid input. Defaulting to topic 1 (Board Independence).")
+            topic = create_sample_topic(1)  # This function now loads from JSON
+        except Exception as e:
+            print(f"⚠️ Error loading topic: {e}. Defaulting to topic 1.")
+            topic = create_sample_topic(1)
+        
+        print(f"📋 Evaluating Topic: {topic.topic_name}")
         result = orchestrator.evaluate_topic(topic)
         
         if result["success"]:

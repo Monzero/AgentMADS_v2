@@ -1,0 +1,54 @@
+{
+  "topics": {
+    "1": {
+      "topic_name": "Board Independence",
+      "goal": "To assess if the board have directors with permanent board seats",
+      "guidance": "You need to look for the corporate governance report. Find the reappointment date for each board members. If the reappointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appointment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information.",
+      "scoring_rubric": {
+        "0": "if any one of the directors is marked as permanent board members as well as they are not explicitly mentioned to be representatives of lenders.",
+        "1": "if the directors which are marked as permanent board members, but those are representatives of lenders. Remember that usually this case is applicable for financially distressed companies. So unless it is mentioned explicitly that lenders have sent those board members as representative, do not assume so.",
+        "2": "if All directors are marked as non-permanent board members"
+      }
+    },
+    "2": {
+      "topic_name": "AGM Delay",
+      "goal": "To evaluate if the company's books were audited quick enough that they could hold AGM quicker after the financial year ended.",
+      "guidance": "You have to look for two dates. One for financial year end date and second for AGM date. Financial year end date is usually 31st March, but it can be different for some companies. This you can typically find in annual report. Then you need to check the AGM date. AGM date is typically found on notice section of annual report. It is either on first few pages or last few pages of the annual report. Make sure you quote this source in the answer with the page number from which you extract the information. Calculate the gap between financial year end date and AGM date. And answer whether this gap is less than 4 months, between 4 to 6 months or more than 6 months.",
+      "scoring_rubric": {
+        "0": "if the gap between financial year end date and AGM date is more than 6 months",
+        "1": "if the gap between financial year end date and AGM date is between 4 to 6 months",
+        "2": "if the gap between financial year end date and AGM date is less than 4 months"
+      }
+    },
+    "3": {
+      "topic_name": "POSH Compliance",
+      "goal": "To assess if the company has a proper POSH (Prevention of Sexual Harassment) policy and compliance",
+      "guidance": "You have to check two main things. First if the company has POSH (Prevention of Sexual Harassment) policy. You can check in either annual report or in document having all policies. Second, check if the company has reported any complaints or cases under this policy in the last financial year. This information is typically found in the corporate governance report or the annual report. Make sure you quote this source in the answer with the page number from which you extract the information.",
+      "scoring_rubric": {
+        "0": "if company does not have any policy regarding prevention of sexual harrassment and the company also has not provided information on the number of sexual harassment incidents.",
+        "1": "if company has either policy regarding prevention of sexual harrassment or the company has provided information on the number of sexual harassment incidents.",
+        "2": "if company has both policy regarding prevention of sexual harrassment and the company has provided information on the number of sexual harassment incidents."
+      }
+    },
+    "4": {
+      "topic_name": "Related Party Transactions Oversight",
+      "goal": "To evaluate the governance framework for managing related party transactions",
+      "guidance": "You need to look for policy regarding related party transactions. We need to evaluate first if such a policy exists. If it does, is it comprehensive and well-defined? Make sure to quote this source in the answer with the page number from which you extract the information.",
+      "scoring_rubric": {
+        "0": "if policy regarding related party transactions is not present",
+        "1": "if policy regarding related party transactions is present but not comprehensive or not well-defined",
+        "2": "if policy regarding related party transactions is present and it is comprehensive and well-defined"
+      }
+    },
+    "5": {
+      "topic_name": "Women representation in workforce",
+      "goal": "To assess if company has sufficient women representation in workforce",
+      "guidance": "You need to look for percentage of women in total workforce. This information is typically found in the corporate governance report or the annual report. If direct ratio is not given, try to look for total women employees and total number of employees and calculate ratio yourself. Make sure you quote this source in the answer with the page number from which you extract the information.",
+      "scoring_rubric": {
+        "0": "if there is no such disclosure or the percentage of women in workforce is less than 10%",
+        "1": "if percentage of  women in workforce is between 10% to 30%",
+        "2": "if percentage of  women in workforce is more than 30%"
+      }
+    }
+  }
+}

@@ -32,6 +32,27 @@ except ImportError:
     st.error("Could not import the main agentic system. Please ensure main.py is in the same directory.")
     st.stop()
 
+def load_sample_topics():
+    """Load sample topics from JSON file for Streamlit app"""
+    try:
+        json_path = "sample_topics.json"
+        if not os.path.exists(json_path):
+            json_path = os.path.join(os.path.dirname(__file__), "sample_topics.json")
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            
+        # Convert string keys to integers
+        topics_data = {}
+        for key, value in data["topics"].items():
+            topics_data[int(key)] = value
+            
+        return topics_data
+        
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        st.warning(f"Could not load predefined topics: {e}")
+        return {}
+
 # Page configuration
 st.set_page_config(
     page_title="Corporate Governance AI",
@@ -119,26 +140,77 @@ def get_available_companies() -> List[str]:
     return sorted(companies)
 
 def create_topic_form() -> TopicDefinition:
-    """Create form for topic definition"""
+    """Create form for topic definition with predefined options"""
     st.subheader("Define Your Topic")
     
+    # Load predefined topics
+    predefined_topics = load_sample_topics()
+    
+    # Create dropdown options
+    topic_options = ["Custom (Create your own topic)"]
+    for num, topic_data in predefined_topics.items():
+        topic_options.append(f"{num}. {topic_data['topic_name']}")
+    
+    # Topic selection dropdown (only if topics loaded successfully)
+    if predefined_topics:
+        st.markdown("### Topic Selection")
+        selected_option = st.selectbox(
+            "Choose a predefined topic or create a custom one:",
+            topic_options,
+            help="Select from predefined corporate governance topics or create your own custom topic"
+        )
+    else:
+        selected_option = "Custom (Create your own topic)"
+        st.info("Creating custom topic (predefined topics not available)")
+    
+    # Initialize default values
+    default_topic_name = "e.g Board Independence"
+    default_goal = "To assess if the board have directors with permanent board seats..."
+    default_guidance = """ What to look for, what specific computation should be done, which information is key..."""
+    default_score_0 = "...condition for giving score 0."
+    default_score_1 = "...condition for giving score 1."
+    default_score_2 = "...condition for giving score 2."
+    
+    # Check if a predefined topic was selected
+    if selected_option != "Custom (Create your own topic)" and predefined_topics:
+        try:
+            # Extract topic number from selection
+            topic_num = int(selected_option.split(".")[0])
+            topic_data = predefined_topics[topic_num]
+            
+            # Set default values from predefined topic
+            default_topic_name = topic_data["topic_name"]
+            default_goal = topic_data["goal"]
+            default_guidance = topic_data["guidance"]
+            default_score_0 = topic_data["scoring_rubric"]["0"]
+            default_score_1 = topic_data["scoring_rubric"]["1"]
+            default_score_2 = topic_data["scoring_rubric"]["2"]
+            
+            # Show info about predefined topic
+            st.info(f"📋 **Selected Topic:** {topic_data['topic_name']}")
+            st.info("💡 **Tip:** You can modify any field below if needed, or keep the predefined values.")
+            
+        except (ValueError, KeyError, IndexError):
+            st.warning("Error loading selected topic. Using default values.")
+    
+    # Rest of the form remains EXACTLY the same as your original
     with st.form("topic_form"):
         topic_name = st.text_input(
             "Topic Name",
-            value="Board Independence",
+            value=default_topic_name,
             help="A concise name for your evaluation topic"
         )
         
         goal = st.text_area(
             "Goal",
-            value="To assess if the board have directors with permanent board seats",
+            value=default_goal,
             help="What you want to evaluate or measure",
             height=100
         )
         
         guidance = st.text_area(
             "Guidance",
-            value="""You need to look for the corporate governance report. Find the reappointment date for each board members. If the reappointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appointment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information.""",
+            value=default_guidance,
             help="Detailed instructions on how to evaluate this topic",
             height=200
         )
@@ -149,20 +221,20 @@ def create_topic_form() -> TopicDefinition:
         with col1:
             score_0 = st.text_area(
                 "Score 0 (Poor)",
-                value="if any one of the directors is marked as permanent board members as well as they are not explicitly mentioned to be representatives of lenders.",
+                value=default_score_0,
                 help="Criteria for the lowest score"
             )
         
         with col2:
             score_2 = st.text_area(
                 "Score 2 (Excellent)",
-                value="if All directors are marked as non-permanent board members",
+                value=default_score_2,
                 help="Criteria for the highest score"
             )
         
         score_1 = st.text_area(
             "Score 1 (Good)",
-            value="if the directors which are marked as permanent board members, but those are representatives of lenders. Remember that usually this case is applicable for financially distressed companies. So unless it is mentioned explicitly that lenders have sent those board members as representative, do not assume so.",
+            value=default_score_1,
             help="Criteria for the middle score"
         )
         
@@ -442,9 +514,9 @@ def run_evaluation(company: str, topic: TopicDefinition, config_dict: Dict[str, 
         config.auto_fallback_to_direct = True
         
         # Use sensible defaults for technical parameters
-        config.bm25_weight = 0.5
-        config.vector_weight = 0.5
-        config.similarity_threshold = 0.001
+        config.bm25_weight = 0.4
+        config.vector_weight = 0.6
+        config.similarity_threshold = 0.1
         config.page_buffer = 1
         config.max_pdf_size_mb = 20
         config.max_direct_documents = 3
@@ -465,15 +537,13 @@ def run_evaluation(company: str, topic: TopicDefinition, config_dict: Dict[str, 
         # Run evaluation
         update_status("Running evaluation...")
         result = orchestrator.evaluate_topic(topic)
-        print(f"Evaluation result: {result}")
-        update_status("Evaluation complete...")
-        
-        
+
+          
         # Save results
         if result and result.get("success", False):
             update_status("Saving results...")
             save_results(result, config)
-            save_summary_csv(result, config)
+            #save_summary_csv(result, config) #save_results will anyways call save_summary_csv
             update_status("Evaluation completed successfully")
         else:
             update_status("Evaluation failed")
@@ -682,43 +752,216 @@ def main():
             help="Choose what you want to do"
         )
     
-    # Main content area
     if page == "Home":
         st.subheader("Welcome to the Corporate Governance AI System")
         
+        # Introduction
         st.markdown("""
-        This system uses advanced AI agents to evaluate corporate governance topics by:
+        <div style="background-color: #f0f4f8; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <h3 style="color: #2d3748; margin-top: 0;">Transform Corporate Governance Analysis with AI</h3>
+        <p style="font-size: 1.1em; color: #4a5568; margin-bottom: 0;">
+        This enterprise-grade system leverages multiple AI agents to automatically evaluate corporate governance topics 
+        by analyzing annual reports, governance documents, and regulatory filings. Get objective, evidence-based 
+        assessments in minutes instead of hours.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        **Intelligent Document Analysis**
-        - Advanced search combining multiple methods
-        - Automatic PDF processing
-        - Smart fallback mechanisms
+        # Key Features
+        st.markdown("## **Core Capabilities**")
         
-        **Multi-Agent Workflow**
-        - Input validation and guardrails
-        - Dynamic question generation
-        - Research with source verification
-        - Automated scoring against custom rubrics
+        col1, col2 = st.columns(2)
         
-        **Optimized Performance**
-        - Pre-computed embeddings and indexes
-        - Intelligent caching system
-        - Real-time status updates
+        with col1:
+            st.markdown("""
+            ### **Intelligent Document Analysis**
+            - **Multi-modal Processing**: Analyzes PDFs with text extraction and visual recognition
+            - **Advanced Search**: Combines BM25 keyword search with semantic vector search
+            - **Smart Fallback**: Automatically switches methods when initial approaches don't find sufficient information
+            - **Source Citation**: Every finding is linked back to specific page numbers and documents
+            
+            ### **Multi-Agent Workflow**
+            - **Input Validation**: Ensures topic definitions are well-formed and evaluable
+            - **Strategic Question Generation**: Creates targeted research questions based on scoring rubrics
+            - **Iterative Research**: Adapts follow-up questions based on evidence gaps
+            - **Quality Assurance**: Validates answer quality before final scoring
+            """)
         
-        **Comprehensive Analysis**
-        - Evidence-based scoring
-        - Source citations and verification
-        - Performance metrics and insights
+        with col2:
+            st.markdown("""
+            ### **Optimized Performance**
+            - **Pre-computed Indexes**: Documents processed once, queried instantly
+            - **Intelligent Caching**: Speeds up repeated analyses
+            - **Progressive Escalation**: Tries efficient methods first, escalates as needed
+            - **Real-time Monitoring**: Track evaluation progress and performance metrics
+            
+            ### **Comprehensive Analysis**
+            - **Evidence-based Scoring**: Uses predefined rubrics for consistent evaluation
+            - **Confidence Assessment**: Rates the reliability of findings
+            - **Multi-source Validation**: Cross-references information across documents
+            - **Audit Trail**: Complete transparency of reasoning and sources
+            """)
+        
+        # How It Works
+        st.markdown("## **How It Works**")
+        
+        st.markdown("""
+        <div style="background-color: #fff5f5; padding: 15px; border-left: 5px solid #e53e3e; margin: 10px 0;">
+        <strong>Step 1: Topic Definition</strong><br>
+        Define what you want to evaluate (e.g., "Board Independence") with clear scoring criteria (0-2 scale)
+        </div>
+        
+        <div style="background-color: #fffaf0; padding: 15px; border-left: 5px solid #dd6b20; margin: 10px 0;">
+        <strong>Step 2: Strategic Research</strong><br>
+        AI agents generate targeted questions and systematically search through corporate documents
+        </div>
+        
+        <div style="background-color: #f0fff4; padding: 15px; border-left: 5px solid #38a169; margin: 10px 0;">
+        <strong>Step 3: Evidence Collection</strong><br>
+        System gathers relevant information with source citations and assesses answer quality
+        </div>
+        
+        <div style="background-color: #f7fafc; padding: 15px; border-left: 5px solid #4299e1; margin: 10px 0;">
+        <strong>Step 4: Objective Scoring</strong><br>
+        Final evaluation against your rubric with detailed justification and confidence assessment
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Use Cases
+        st.markdown("## **Perfect For**")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            **Investment Analysis**
+            - Due diligence on portfolio companies
+            - ESG compliance assessment  
+            - Risk factor evaluation
+            - Comparative governance analysis
+            """)
+        
+        with col2:
+            st.markdown("""
+            **Regulatory Compliance**
+            - Audit preparation and review
+            - Compliance gap identification
+            - Best practice benchmarking
+            - Policy effectiveness assessment
+            """)
+        
+        with col3:
+            st.markdown("""
+            **Academic Research**
+            - Corporate governance studies
+            - Large-scale data analysis
+            - Longitudinal trend analysis
+            - Cross-industry comparisons
+            """)
+        
+        # Sample Topics
+        st.markdown("## **Pre-built Evaluation Topics**")
+        
+        topics_info = {
+            "Board Independence": "Assess director tenure and independence from management influence",
+            "AGM Timeliness": "Evaluate how quickly companies hold AGMs after financial year-end",
+            "POSH Compliance": "Review sexual harassment prevention policies and incident reporting", 
+            "Related Party Oversight": "Analyze governance of related party transaction approval processes",
+            "Workforce Diversity": "Measure women's representation across organizational levels"
+        }
+        
+        for topic, description in topics_info.items():
+            st.markdown(f"**{topic}**: {description}")
+        
+        # Getting Started
+        st.markdown("## **Getting Started**")
+        
+        st.markdown("""
+        1. **Select Company**: Choose from available company data in the sidebar
+        2. **Create Topic**: Pick a pre-built topic or define your own evaluation criteria  
+        3. **Configure**: Choose analysis method and agent settings (optional)
+        4. **Run Evaluation**: Let the AI agents analyze the documents
+        5. **Review Results**: Examine findings, evidence, and download reports
         """)
         
-        # Quick stats
+        # Technical Highlights
+        with st.expander("**Technical Architecture** (For Technical Users)", expanded=False):
+            st.markdown("""
+            **Agent Architecture:**
+            - **Input Guardrail Agent**: Validates topic definitions using rule-based logic
+            - **Question Agent**: Generates strategic research questions using LLM analysis
+            - **Research Agent**: Conducts document search with hybrid retrieval methods
+            - **Output Guardrail Agent**: Validates answer quality and source citations
+            - **Scoring Agent**: Provides final evaluation against defined rubrics
+            
+            **Retrieval Methods:**
+            - **BM25**: Traditional keyword-based search for exact term matching
+            - **Vector Search**: Semantic similarity using sentence transformers
+            - **Hybrid**: Combines both approaches with weighted scoring
+            - **Direct Processing**: Sends entire documents to multimodal AI when needed
+            
+            **Performance Optimizations:**
+            - Pre-computed document chunks and embeddings
+            - Intelligent caching with automatic invalidation
+            - Progressive document escalation strategies
+            - Memory-efficient vector operations
+            """)
+        
+        # Quick stats and company info
         if selected_company:
-            data_path = f"./data/{selected_company}/98_data"
-            if os.path.exists(data_path):
-                doc_count = len([f for f in os.listdir(data_path) if f.endswith('.pdf')])
-            else:
-                doc_count = 0
-            st.info(f"Selected Company: **{selected_company}** with **{doc_count} documents**")
+            st.markdown("---")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                data_path = f"./data/{selected_company}/98_data"
+                if os.path.exists(data_path):
+                    try:
+                        doc_count = len([f for f in os.listdir(data_path) if f.endswith('.pdf')])
+                        pdf_files = [f for f in os.listdir(data_path) if f.endswith('.pdf')]
+                        total_size = sum(os.path.getsize(os.path.join(data_path, f)) for f in pdf_files)
+                        total_size_mb = total_size / (1024 * 1024)
+                    except Exception:
+                        doc_count = 0
+                        total_size_mb = 0
+                else:
+                    doc_count = 0
+                    total_size_mb = 0
+                
+                st.metric("Selected Company", selected_company)
+            
+            with col2:
+                st.metric("Documents Available", f"{doc_count} PDFs")
+            
+            with col3:
+                st.metric("Total Data Size", f"{total_size_mb:.1f} MB")
+            
+            # Show available documents
+            if doc_count > 0:
+                with st.expander(f"View Available Documents ({doc_count} files)", expanded=False):
+                    try:
+                        for file in sorted(pdf_files):
+                            file_path = os.path.join(data_path, file)
+                            file_size = os.path.getsize(file_path) / (1024 * 1024)
+                            st.write(f"**{file}** ({file_size:.1f} MB)")
+                    except Exception as e:
+                        st.write(f"Could not list files: {e}")
+            
+            st.info(f"💡 **Ready to analyze {selected_company}!** Navigate to 'Create Topic' to define your evaluation criteria.")
+        else:
+            st.warning("⚠️ No company selected. Please choose a company from the sidebar to begin.")
+            
+        # Footer with tips
+        st.markdown("---")
+        st.markdown("""
+        <div style="background-color: #edf2f7; padding: 15px; border-radius: 8px; text-align: center;">
+        <h4 style="color: #2d3748; margin-top: 0;">💡 Pro Tips</h4>
+        <p style="color: #4a5568; margin-bottom: 0;">
+        • Start with pre-built topics to understand the system • Use hybrid retrieval for best results • 
+        Check source citations for verification • Download results for further analysis • 
+        Clear caches if you encounter processing issues
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
     
     elif page == "Create Topic":
         topic = create_topic_form()
