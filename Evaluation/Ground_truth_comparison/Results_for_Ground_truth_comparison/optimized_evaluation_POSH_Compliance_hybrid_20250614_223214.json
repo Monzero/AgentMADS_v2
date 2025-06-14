@@ -1,0 +1,73 @@
+{
+  "success": true,
+  "topic": {
+    "name": "POSH Compliance",
+    "goal": "To assess if the company has a proper POSH (Prevention of Sexual Harassment) policy and compliance",
+    "guidance": "You have to check two main things. First if the company has POSH (Prevention of Sexual Harassment) policy. You can check in either annual report or in document having all policies. Second, check if the company has reported any complaints or cases under this policy in the last financial year. This information is typically found in the corporate governance report or the annual report. Make sure you quote this source in the answer with the page number from which you extract the information.",
+    "rubric": {
+      "0": "if company does not have any policy regarding prevention of sexual harrassment and the company also has not provided information on the number of sexual harassment incidents.",
+      "1": "if company has either policy regarding prevention of sexual harrassment or the company has provided information on the number of sexual harassment incidents.",
+      "2": "if company has both policy regarding prevention of sexual harrassment and the company has provided information on the number of sexual harassment incidents."
+    }
+  },
+  "research_summary": {
+    "iterations": 2,
+    "questions_asked": 2,
+    "answers_approved": 2,
+    "retrieval_method": "hybrid",
+    "total_sources": 6,
+    "pdf_slices_used": true,
+    "optimization_enabled": true,
+    "agent_llm_config": {
+      "input_agent": "gemini-1.5-flash",
+      "question_agent": "gemini-1.5-flash",
+      "research_agent": "gemini-1.5-pro",
+      "scoring_agent": "gemini-1.5-flash"
+    }
+  },
+  "performance_metrics": {
+    "total_time": 22.440752029418945,
+    "research_time": 11.242644309997559,
+    "scoring_time": 4.506407737731934,
+    "avg_research_per_iteration": 5.621322154998779
+  },
+  "evidence": [
+    {
+      "question": "Does the company's annual report (or equivalent corporate governance document) explicitly state the existence of a Prevention of Sexual Harassment (POSH) policy AND provide data on the number of POSH complaints or incidents reported during the last financial year, including the relevant page numbers for each?",
+      "answer": "Yes.  The Tata Motors 79th Integrated Annual Report mentions a Prevention of Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013, policy (page 192).  It also provides data on the number of complaints filed under this act during FY24 (11 complaints) and FY23 (11 complaints),  also on page 192.\n\nSources: pp. 193-195 (annual_report_url.pdf); pp. 101-103 (combined_policies.pdf); pp. 5-7 (cg_report.pdf); pp. 12-14 (credit_rating.pdf)",
+      "sources": [
+        "Page 194 (annual_report_url.pdf)",
+        "Page 102 (combined_policies.pdf)",
+        "Page 6 (cg_report.pdf)",
+        "Page 13 (credit_rating.pdf)"
+      ],
+      "confidence": "medium",
+      "has_citations": true
+    },
+    {
+      "question": "What is the total number of sexual harassment complaints or incidents reported under the company's POSH policy during the last financial year?",
+      "answer": "Eleven (11) sexual harassment complaints were reported during FY24. (Page 3)\n\nSources: pp. 193-195 (annual_report_url.pdf); pp. 126-128 (combined_policies.pdf); pp. 3-5 (cg_report.pdf); pp. 12-14 (credit_rating.pdf)",
+      "sources": [
+        "Page 194 (annual_report_url.pdf)",
+        "Page 127 (combined_policies.pdf)",
+        "Page 4 (cg_report.pdf)",
+        "Page 13 (credit_rating.pdf)"
+      ],
+      "confidence": "medium",
+      "has_citations": true
+    }
+  ],
+  "scoring": {
+    "score": 2,
+    "justification": "The evidence clearly indicates that Tata Motors has both a POSH policy and provides data on the number of sexual harassment incidents. Evidence 1 explicitly states that the company's 79th Integrated Annual Report, on page 192, mentions a Prevention of Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013, policy.  Furthermore, it reports 11 complaints filed under this act during both FY24 and FY23 (page 192).  Evidence 2 corroborates this information, stating that 11 sexual harassment complaints were reported during FY24 (Page 3 of an unspecified source, likely the same annual report or a similar document given the page number difference). The combination of evidence from both sources clearly meets both criteria for a score of 2, confirming the existence of a POSH policy and the reporting of sexual harassment incidents.  Sources cited include: pp. 193-195 (annual_report_url.pdf); pp. 101-103 (combined_policies.pdf); pp. 5-7 (cg_report.pdf); pp. 12-14 (credit_rating.pdf); Page 194 (annual_report_url.pdf), Page 102 (combined_policies.pdf), Page 6 (cg_report.pdf), Page 13 (credit_rating.pdf); pp. 193-195 (annual_report_url.pdf); pp. 126-128 (combined_policies.pdf); pp. 3-5 (cg_report.pdf); pp. 12-14 (credit_rating.pdf); Page 194 (annual_report_url.pdf), Page 127 (combined_policies.pdf), Page 4 (cg_report.pdf), Page 13 (credit_rating.pdf).",
+    "evidence_quality": "good",
+    "key_findings": [
+      "Tata Motors has a documented POSH policy (page 192, annual report).",
+      "Tata Motors reported 11 sexual harassment complaints in FY24 (page 192 & page 3, annual report/related document).",
+      "The evidence provides supporting information from multiple sources, though the exact source for some page numbers is unclear beyond 'annual_report_url.pdf'."
+    ],
+    "confidence": "low",
+    "retrieval_method": "hybrid"
+  },
+  "timestamp": "2025-06-14T22:32:14.140977"
+}
