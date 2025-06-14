@@ -1,0 +1,60 @@
+{
+  "success": true,
+  "topic": {
+    "name": "Women representation in workforce",
+    "goal": "To assess if company has sufficient women representation in workforce",
+    "guidance": "You need to look for percentage of women in total workforce. This information is typically found in the corporate governance report or the annual report. If direct ratio is not given, try to look for total women employees and total number of employees and calculate ratio yourself. Make sure you quote this source in the answer with the page number from which you extract the information.",
+    "rubric": {
+      "0": "if there is no such disclosure or the percentage of women in workforce is less than 10%",
+      "1": "if percentage of  women in workforce is between 10% to 30%",
+      "2": "if percentage of  women in workforce is more than 30%"
+    }
+  },
+  "research_summary": {
+    "iterations": 1,
+    "questions_asked": 1,
+    "answers_approved": 1,
+    "retrieval_method": "hybrid",
+    "total_sources": 4,
+    "pdf_slices_used": true,
+    "optimization_enabled": true,
+    "agent_llm_config": {
+      "input_agent": "gemini-1.5-flash",
+      "question_agent": "gemini-1.5-flash",
+      "research_agent": "gemini-1.5-pro",
+      "scoring_agent": "gemini-1.5-flash"
+    }
+  },
+  "performance_metrics": {
+    "total_time": 14.825529098510742,
+    "research_time": 7.680234909057617,
+    "scoring_time": 2.2381701469421387,
+    "avg_research_per_iteration": 7.680234909057617
+  },
+  "evidence": [
+    {
+      "question": "What is the percentage of women in the company's total workforce, as reported in the corporate governance report or annual report (please cite page number)?  If the percentage is not explicitly stated, please provide the total number of female employees and the total number of employees so the percentage can be calculated.",
+      "answer": "According to page 12 of the provided document, women comprised approximately 11% of Tata Motors' total workforce in fiscal year 2023.\n\nSources: pp. 128-130 (annual_report_url.pdf); pp. 12-14 (cg_report.pdf); pp. 172-174 (combined_policies.pdf); pp. 2-4 (credit_rating.pdf)",
+      "sources": [
+        "Page 129 (annual_report_url.pdf)",
+        "Page 13 (cg_report.pdf)",
+        "Page 173 (combined_policies.pdf)",
+        "Page 3 (credit_rating.pdf)"
+      ],
+      "confidence": "medium",
+      "has_citations": true
+    }
+  ],
+  "scoring": {
+    "score": 1,
+    "justification": "The evidence states that \"women comprised approximately 11% of Tata Motors' total workforce in fiscal year 2023\" (Evidence 1).  This percentage falls within the range of 10% to 30%, as defined in the scoring rubric for a score of 1. The source cited is page 12 of the provided document. Note that while multiple page numbers are listed in the source section of the evidence,  the answer specifically references page 12.  Therefore, the score of 1 is justified based on this information.",
+    "evidence_quality": "good",
+    "key_findings": [
+      "Women represent approximately 11% of Tata Motors' workforce in FY2023 (p. 12 of provided document)",
+      "This percentage falls within the rubric's 10%-30% range, resulting in a score of 1."
+    ],
+    "confidence": "low",
+    "retrieval_method": "hybrid"
+  },
+  "timestamp": "2025-06-14T23:50:30.862488"
+}

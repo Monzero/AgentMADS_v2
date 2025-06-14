@@ -1,0 +1,60 @@
+{
+  "success": true,
+  "topic": {
+    "name": "Women representation in workforce",
+    "goal": "To assess if company has sufficient women representation in workforce",
+    "guidance": "You need to look for percentage of women in total workforce. This information is typically found in the corporate governance report or the annual report. If direct ratio is not given, try to look for total women employees and total number of employees and calculate ratio yourself. Make sure you quote this source in the answer with the page number from which you extract the information.",
+    "rubric": {
+      "0": "if there is no such disclosure or the percentage of women in workforce is less than 10%",
+      "1": "if percentage of  women in workforce is between 10% to 30%",
+      "2": "if percentage of  women in workforce is more than 30%"
+    }
+  },
+  "research_summary": {
+    "iterations": 1,
+    "questions_asked": 1,
+    "answers_approved": 1,
+    "retrieval_method": "hybrid",
+    "total_sources": 4,
+    "pdf_slices_used": true,
+    "optimization_enabled": true,
+    "agent_llm_config": {
+      "input_agent": "gemini-1.5-flash",
+      "question_agent": "gemini-1.5-flash",
+      "research_agent": "gemini-1.5-pro",
+      "scoring_agent": "gemini-1.5-flash"
+    }
+  },
+  "performance_metrics": {
+    "total_time": 13.711426019668579,
+    "research_time": 5.842750787734985,
+    "scoring_time": 2.2621896266937256,
+    "avg_research_per_iteration": 5.842750787734985
+  },
+  "evidence": [
+    {
+      "question": "What is the percentage of women employees in the total workforce, as reported in the corporate governance report or annual report (please specify page number)?  If this percentage is not explicitly stated, please provide the total number of female employees and the total number of employees so the percentage can be calculated.",
+      "answer": "The document states that women comprised approximately 11% of the total workforce in fiscal year 2023 (page 12).  The exact number of female employees and total employees is not provided.\n\n\nSources: pp. 128-130 (annual_report_url.pdf); pp. 12-14 (cg_report.pdf); pp. 172-174 (combined_policies.pdf); pp. 2-4 (credit_rating.pdf)",
+      "sources": [
+        "Page 129 (annual_report_url.pdf)",
+        "Page 13 (cg_report.pdf)",
+        "Page 173 (combined_policies.pdf)",
+        "Page 3 (credit_rating.pdf)"
+      ],
+      "confidence": "medium",
+      "has_citations": true
+    }
+  ],
+  "scoring": {
+    "score": 1,
+    "justification": "The evidence from page 12 of the cg_report.pdf states that women comprised approximately 11% of the total workforce in fiscal year 2023.  This percentage falls within the range of 10% to 30%, which corresponds to a score of 1 according to the provided scoring rubric.  While the exact numbers of female and total employees are not given, the reported percentage is sufficient for scoring.  Other sources were consulted, but only cg_report.pdf (page 12) provided the relevant data.",
+    "evidence_quality": "good",
+    "key_findings": [
+      "Women comprised approximately 11% of the total workforce in fiscal year 2023 (cg_report.pdf, page 12)",
+      "This percentage falls within the scoring rubric's range for a score of 1 (10% to 30%)"
+    ],
+    "confidence": "low",
+    "retrieval_method": "hybrid"
+  },
+  "timestamp": "2025-06-14T23:57:47.628176"
+}
