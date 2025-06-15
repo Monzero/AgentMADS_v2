@@ -2262,27 +2262,7 @@ class OutputGuardrailAgent:
         
         return validation_result
 
-class ScoringAgent:
-    r"""
-    ScoringAgent Class - Final Evaluation and Scoring System (COMPLETE REWRITE)
-    ============================================================================
-
-    FIXED: Eliminates evidence numbers entirely. Creates merged evidence summary with direct citations.
-    The LLM will only see actual document content and source lists, forcing proper citation behavior.
-
-    WHY THIS APPROACH:
-    -----------------
-    - No "Evidence 1", "Evidence 2" references possible
-    - Forces LLM to cite actual page numbers and document names
-    - Creates coherent narrative from all research findings
-    - Maintains all source citations in easily accessible format
-    - Provides cleaner, more professional justifications
-
-    EXAMPLE OUTPUT TRANSFORMATION:
-    Before: "Evidence 1 states that women comprised 11% of workforce (page 12 of the report)"
-    After:  "According to page 12 of workforce_diversity_report.pdf, women comprised 11% of the workforce"
-    """
-    
+class ScoringAgent:    
     def __init__(self, config: OptimizedConfig):
         self.config = config
         self.llm_manager = LLMManager(config)
