@@ -228,9 +228,9 @@ class OptimizedConfig:
         
         # Retrieval configuration
         self.retrieval_method = "hybrid"
-        self.bm25_weight = 0.5
-        self.vector_weight = 0.5
-        self.max_chunks_for_query = None  # No limit - use all chunks retriever finds
+        self.bm25_weight = 0.6
+        self.vector_weight = 0.4
+        self.max_chunks_for_query = 10  # No limit - use all chunks retriever finds
         self.chunk_size = 1000
         self.chunk_overlap = 200
         
@@ -244,7 +244,7 @@ class OptimizedConfig:
         self.embedding_model_name = "sentence-transformers/all-MiniLM-L6-v2"
         
         # No artificial limits - let retrievers return all relevant content
-        self.similarity_threshold = 0.001  # Minimum similarity score for vector search
+        self.similarity_threshold = 0.0  # Minimum similarity score for vector search
         self.bm25_score_threshold = 0.0  # Minimum BM25 score (usually 0 is fine)
         
         # Intelligent fallback settings
@@ -2262,7 +2262,171 @@ class OutputGuardrailAgent:
         
         return validation_result
 
+# class ScoringAgent:
+    
+#     def __init__(self, config: OptimizedConfig):
+#         self.config = config
+#         self.llm_manager = LLMManager(config)
+#         self.llm = None
+#         self.current_model = None
+#         self._setup_llm()
+    
+#     def _setup_llm(self):
+#         """Setup LLM for scoring"""
+#         self.llm, self.current_model = self.llm_manager.get_llm("scoring_agent")
+        
+#     def score_topic(self, topic: TopicDefinition, answers: List[Answer]) -> Dict[str, Any]:
+#         """Score the topic based on collected answers and rubric"""
+        
+#         # print_agent_action("SCORING", "Final Topic Scoring", 
+#         #                   f"Evaluating {len(answers)} pieces of evidence")
+        
+#         print_agent_action("SCORING", "Final Topic Scoring", 
+#                   f"Evaluating {len(answers)} pieces of evidence", self.current_model)
+        
+#         if not self.llm:
+#             print(f"   ❌ No LLM available for scoring")
+#             return {
+#                 "score": 0,
+#                 "justification": "No LLM available for scoring",
+#                 "confidence": "low",
+#                 "evidence_quality": "poor",
+#                 "retrieval_method": self.config.retrieval_method
+#             }
+        
+#         # Prepare evidence summary
+#         evidence_summary = self._prepare_evidence_summary(answers)
+#         print(f"   📊 Evidence summary prepared ({len(evidence_summary)} characters)")
+        
+#         prompt = f"""
+#         You are scoring a corporate governance topic based on collected research evidence.
+        
+#         TOPIC: {topic.topic_name}
+#         GOAL: {topic.goal}
+#         GUIDANCE: {topic.guidance}
+        
+#         SCORING RUBRIC:
+#         {json.dumps(topic.scoring_rubric, indent=2)}
+        
+#         RESEARCH EVIDENCE (collected using {self.config.retrieval_method} retrieval):
+#         {evidence_summary}
+        
+#         Instructions:
+#         1. Evaluate the evidence against each scoring level in the rubric
+#         2. Assign a score (0, 1, or 2) based on which level best matches the evidence
+#         3. Provide detailed justification with specific references to the evidence
+#         4. Preserve all source citations from the evidence in your justification
+        
+#         Respond in JSON format:
+#         {{
+#             "score": 0/1/2,
+#             "justification": "Detailed justification with source citations",
+#             "evidence_quality": "excellent/good/fair/poor",
+#             "key_findings": ["list of key findings that influenced the score"]
+#         }}
+        
+#         Be objective and base your score strictly on the evidence provided.
+#         """
+        
+#         try:
+#             if hasattr(self.llm, 'generate_content'):
+#                 response = self.llm.generate_content(prompt)
+#                 response_text = response.text
+#             else:
+#                 response_text = self.llm.invoke(prompt)
+            
+#             # Parse response
+#             import re
+#             json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+#             if json_match:
+#                 result = json.loads(json_match.group())
+                
+#                 # Validate score
+#                 score = result.get("score", 0)
+#                 if score not in [0, 1, 2]:
+#                     score = 0
+#                     print(f"   ⚠️ Invalid score, defaulting to 0")
+                
+#                 confidence = self._assess_scoring_confidence(answers)
+                
+#                 print(f"   📊 Final Score: {score}/2")
+#                 print(f"   🎯 Evidence Quality: {result.get('evidence_quality', 'fair')}")
+#                 print(f"   💪 Scoring Confidence: {confidence}")
+                
+#                 return {
+#                     "score": score,
+#                     "justification": result.get("justification", "No justification provided"),
+#                     "evidence_quality": result.get("evidence_quality", "fair"),
+#                     "key_findings": result.get("key_findings", []),
+#                     "confidence": confidence,
+#                     "retrieval_method": self.config.retrieval_method
+#                 }
+#             else:
+#                 raise ValueError("No JSON found in response")
+                
+#         except Exception as e:
+#             logger.error(f"Scoring error: {e}")
+#             print(f"   ❌ Scoring failed: {str(e)}")
+#             return {
+#                 "score": 0,
+#                 "justification": f"Scoring failed: {str(e)}",
+#                 "confidence": "low",
+#                 "evidence_quality": "poor",
+#                 "retrieval_method": self.config.retrieval_method
+#             }
+    
+#     def _prepare_evidence_summary(self, answers: List[Answer]) -> str:
+#         """Prepare a summary of all research evidence"""
+#         summary_parts = []
+        
+#         for i, answer in enumerate(answers, 1):
+#             part = f"""
+# EVIDENCE {i}:
+# Question: {answer.question}
+# Answer: {answer.answer}
+# Sources: {', '.join(answer.sources)}
+# Confidence: {answer.confidence}
+# ---
+# """
+#             summary_parts.append(part)
+        
+#         return "\n".join(summary_parts)
+    
+#     def _assess_scoring_confidence(self, answers: List[Answer]) -> str:
+#         """Assess overall confidence in scoring based on answer quality"""
+#         if not answers:
+#             return "low"
+        
+#         high_confidence_count = sum(1 for ans in answers if ans.confidence == "high" and ans.has_citations)
+#         total_answers = len(answers)
+        
+#         if high_confidence_count >= total_answers * 0.8:
+#             return "high"
+#         elif high_confidence_count >= total_answers * 0.5:
+#             return "medium"
+#         else:
+#             return "low"
+
 class ScoringAgent:
+    r"""
+    ScoringAgent Class - Final Evaluation and Scoring System (COMPLETE REWRITE)
+    ============================================================================
+
+    FIXED: Eliminates evidence numbers entirely. Creates merged evidence summary with direct citations.
+    The LLM will only see actual document content and source lists, forcing proper citation behavior.
+
+    WHY THIS APPROACH:
+    -----------------
+    - No "Evidence 1", "Evidence 2" references possible
+    - Forces LLM to cite actual page numbers and document names
+    - Creates coherent narrative from all research findings
+    - Maintains all source citations in easily accessible format
+    - Provides cleaner, more professional justifications
+
+    EXAMPLE OUTPUT TRANSFORMATION:
+    Before: "Evidence 1 states that women comprised 11% of workforce (page 12 of the report)"
+    After:  "According to page 12 of workforce_diversity_report.pdf, women comprised 11% of the workforce"
+    """
     
     def __init__(self, config: OptimizedConfig):
         self.config = config
@@ -2278,9 +2442,6 @@ class ScoringAgent:
     def score_topic(self, topic: TopicDefinition, answers: List[Answer]) -> Dict[str, Any]:
         """Score the topic based on collected answers and rubric"""
         
-        # print_agent_action("SCORING", "Final Topic Scoring", 
-        #                   f"Evaluating {len(answers)} pieces of evidence")
-        
         print_agent_action("SCORING", "Final Topic Scoring", 
                   f"Evaluating {len(answers)} pieces of evidence", self.current_model)
         
@@ -2294,39 +2455,39 @@ class ScoringAgent:
                 "retrieval_method": self.config.retrieval_method
             }
         
-        # Prepare evidence summary
-        evidence_summary = self._prepare_evidence_summary(answers)
-        print(f"   📊 Evidence summary prepared ({len(evidence_summary)} characters)")
+        # Create merged evidence summary (NO evidence numbers)
+        evidence_summary = self._create_merged_evidence_summary(answers)
+        print(f"   📊 Merged evidence summary prepared ({len(evidence_summary)} characters)")
         
         prompt = f"""
-        You are scoring a corporate governance topic based on collected research evidence.
-        
-        TOPIC: {topic.topic_name}
-        GOAL: {topic.goal}
-        GUIDANCE: {topic.guidance}
-        
-        SCORING RUBRIC:
-        {json.dumps(topic.scoring_rubric, indent=2)}
-        
-        RESEARCH EVIDENCE (collected using {self.config.retrieval_method} retrieval):
-        {evidence_summary}
-        
-        Instructions:
-        1. Evaluate the evidence against each scoring level in the rubric
-        2. Assign a score (0, 1, or 2) based on which level best matches the evidence
-        3. Provide detailed justification with specific references to the evidence
-        4. Preserve all source citations from the evidence in your justification
-        
-        Respond in JSON format:
-        {{
-            "score": 0/1/2,
-            "justification": "Detailed justification with source citations",
-            "evidence_quality": "excellent/good/fair/poor",
-            "key_findings": ["list of key findings that influenced the score"]
-        }}
-        
-        Be objective and base your score strictly on the evidence provided.
-        """
+You are scoring a corporate governance topic based on research findings from corporate documents.
+
+TOPIC: {topic.topic_name}
+GOAL: {topic.goal}
+GUIDANCE: {topic.guidance}
+
+SCORING RUBRIC:
+{json.dumps(topic.scoring_rubric, indent=2)}
+
+{evidence_summary}
+
+SCORING INSTRUCTIONS:
+1. Analyze all the research findings above against the scoring rubric
+2. Determine which rubric level (0, 1, or 2) best matches the findings
+3. Provide detailed justification using ONLY the specific page numbers and document names listed in the "SOURCES REFERENCED" section
+4. Your citations must be in format: "According to page X of document.pdf..." or "As stated on page Y of report.pdf..."
+5. Do not make up or assume any information not present in the research findings
+
+RESPONSE FORMAT (JSON):
+{{
+    "score": 0/1/2,
+    "justification": "Detailed explanation with specific page and document citations from the sources listed above",
+    "evidence_quality": "excellent/good/fair/poor",
+    "key_findings": ["List of specific findings that influenced the score"]
+}}
+
+Base your score strictly on the research findings and cite sources using the exact page numbers and document names provided.
+"""
         
         try:
             if hasattr(self.llm, 'generate_content'):
@@ -2375,22 +2536,133 @@ class ScoringAgent:
                 "retrieval_method": self.config.retrieval_method
             }
     
-    def _prepare_evidence_summary(self, answers: List[Answer]) -> str:
-        """Prepare a summary of all research evidence"""
-        summary_parts = []
-        
-        for i, answer in enumerate(answers, 1):
-            part = f"""
-EVIDENCE {i}:
-Question: {answer.question}
-Answer: {answer.answer}
-Sources: {', '.join(answer.sources)}
-Confidence: {answer.confidence}
----
+    def _create_merged_evidence_summary(self, answers: List[Answer]) -> str:
+        """
+        Create a comprehensive evidence summary that eliminates evidence numbers entirely.
+        Merges all findings into coherent research content with complete source tracking.
+        """
+        if not answers:
+            return """
+RESEARCH FINDINGS:
+No research findings were collected.
+
+SOURCES REFERENCED:
+None
 """
-            summary_parts.append(part)
         
-        return "\n".join(summary_parts)
+        # Step 1: Extract and merge all substantive content
+        all_findings = []
+        all_sources = set()
+        question_topics = []
+        
+        for answer in answers:
+            # Collect the actual research content
+            if answer.answer and len(answer.answer.strip()) > 20:
+                # Clean up the answer text
+                finding = answer.answer.strip()
+                
+                # Add context about what was being researched (without evidence numbers)
+                if answer.question:
+                    question_topics.append(f"Research on: {answer.question}")
+                
+                all_findings.append(finding)
+            
+            # Collect all unique sources
+            for source in answer.sources:
+                if source and source.strip():
+                    all_sources.add(source.strip())
+        
+        # Step 2: Create merged findings section
+        if all_findings:
+            # Combine findings with natural separators
+            merged_content = "\n\n".join([
+                f"Research Finding: {finding}" for finding in all_findings
+            ])
+        else:
+            merged_content = "No substantive research findings were collected."
+        
+        # Step 3: Create comprehensive sources section
+        sources_section = self._create_sources_section(all_sources)
+        
+        # Step 4: Create research context section
+        context_section = ""
+        if question_topics:
+            unique_topics = list(set(question_topics))
+            context_section = f"""
+RESEARCH AREAS INVESTIGATED:
+{chr(10).join([f"• {topic}" for topic in unique_topics])}
+"""
+        
+        # Step 5: Assemble final summary
+        summary = f"""
+COMPREHENSIVE RESEARCH FINDINGS:
+{merged_content}
+
+{context_section}
+{sources_section}
+
+CITATION REQUIREMENTS:
+When writing your justification, you must cite information using the specific page numbers and document names listed in "SOURCES REFERENCED" above. Use format: "According to page X of document_name.pdf..." or "As stated in page Y of report_name.pdf..."
+"""
+        
+        return summary
+    
+    def _create_sources_section(self, sources: set) -> str:
+        """
+        Create a well-organized sources section for easy citation by the LLM.
+        Groups sources by document and formats them clearly.
+        """
+        if not sources:
+            return """
+SOURCES REFERENCED:
+No sources were identified in the research.
+"""
+        
+        # Group sources by document
+        doc_sources = {}
+        other_sources = []
+        
+        for source in sorted(sources):
+            # Parse sources in format: "Page 15 (governance_report.pdf)"
+            if "(" in source and ")" in source and source.startswith("Page "):
+                try:
+                    # Extract page and document
+                    page_part = source.split("(")[0].strip()  # "Page 15"
+                    doc_part = source.split("(")[1].replace(")", "").strip()  # "governance_report.pdf"
+                    
+                    if doc_part not in doc_sources:
+                        doc_sources[doc_part] = []
+                    doc_sources[doc_part].append(page_part)
+                except:
+                    other_sources.append(source)
+            else:
+                other_sources.append(source)
+        
+        # Build sources section
+        sources_lines = ["SOURCES REFERENCED:"]
+        
+        # Add document-grouped sources
+        for doc_name, pages in sorted(doc_sources.items()):
+            if len(pages) == 1:
+                sources_lines.append(f"• {pages[0]} of {doc_name}")
+            else:
+                # Sort pages numerically if possible
+                try:
+                    page_numbers = []
+                    for page in pages:
+                        if page.startswith("Page "):
+                            page_numbers.append(int(page.replace("Page ", "")))
+                    page_numbers.sort()
+                    formatted_pages = [f"Page {num}" for num in page_numbers]
+                    sources_lines.append(f"• {', '.join(formatted_pages)} of {doc_name}")
+                except:
+                    sources_lines.append(f"• {', '.join(sorted(pages))} of {doc_name}")
+        
+        # Add other sources
+        for source in sorted(other_sources):
+            sources_lines.append(f"• {source}")
+        
+        return "\n".join(sources_lines)
     
     def _assess_scoring_confidence(self, answers: List[Answer]) -> str:
         """Assess overall confidence in scoring based on answer quality"""
@@ -2406,6 +2678,13 @@ Confidence: {answer.confidence}
             return "medium"
         else:
             return "low"
+    
+    def _prepare_evidence_summary(self, answers: List[Answer]) -> str:
+        """
+        DEPRECATED: Replaced with _create_merged_evidence_summary
+        This method is kept for compatibility but redirects to the new approach
+        """
+        return self._create_merged_evidence_summary(answers)
 
 class OptimizedAgenticOrchestrator:
     
