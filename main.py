@@ -738,7 +738,6 @@ class InputGuardrailAgent:
             if json_match:
                 result = json.loads(json_match.group())
                 
-                #this if loop disables the LLM validation (so not ideal)
                 if not result.get("valid", True) and not basic_issues:
                     print(f"   🔄 LLM marked invalid, but overriding to valid (lenient policy)")
                     result["valid"] = True
