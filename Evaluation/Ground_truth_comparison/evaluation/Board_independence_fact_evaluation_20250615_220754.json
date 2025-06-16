@@ -1,0 +1,85 @@
+{
+  "evaluation_type": "ultra_short_facts",
+  "summary": {
+    "total_questions": 8,
+    "correct_facts": 8,
+    "accuracy_percentage": 100.0,
+    "timestamp": "2025-06-15T22:07:54.068993",
+    "pass_threshold": 70.0,
+    "result": "PASS"
+  },
+  "detailed_results": [
+    {
+      "question_id": 1,
+      "question": "Number of permanent directors?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'"
+    },
+    {
+      "question_id": 2,
+      "question": "Score assigned?",
+      "gt_answer": "Score 0",
+      "llm_answer": "Score 0",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the score is 0."
+    },
+    {
+      "question_id": 3,
+      "question": "Any permanent lender reps?",
+      "gt_answer": "No lender representatives",
+      "llm_answer": "No lender representatives",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers are identical."
+    },
+    {
+      "question_id": 4,
+      "question": "All directors non-permanent?",
+      "gt_answer": "Score 0",
+      "llm_answer": "Score 0",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers are identical and correctly state that the score is 0."
+    },
+    {
+      "question_id": 5,
+      "question": "Final score assigned?",
+      "gt_answer": "Score 0",
+      "llm_answer": "Score 0",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the score was 0.  This is an exact match."
+    },
+    {
+      "question_id": 6,
+      "question": "Key ratio mentioned?",
+      "gt_answer": "Score of 0",
+      "llm_answer": "Score of 0",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state a score of 0, fulfilling the synonymous terms matching criteria."
+    },
+    {
+      "question_id": 7,
+      "question": "Key date mentioned?",
+      "gt_answer": "March 31, 2019",
+      "llm_answer": "March 31st, 2019",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Same date, different date format."
+    },
+    {
+      "question_id": 8,
+      "question": "Main percentage stated?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'."
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "evaluation_type": "ultra_short_facts",
+  "summary": {
+    "total_questions": 8,
+    "correct_facts": 7,
+    "accuracy_percentage": 87.5,
+    "timestamp": "2025-06-15T21:38:37.724560",
+    "pass_threshold": 70.0,
+    "result": "PASS"
+  },
+  "detailed_results": [
+    {
+      "question_id": 1,
+      "question": "Fiscal year end date?",
+      "gt_answer": "March 31, 2024",
+      "llm_answer": "March 31, 2024",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Exact match of date formats."
+    },
+    {
+      "question_id": 2,
+      "question": "AGM date?",
+      "gt_answer": "June 24, 2024",
+      "llm_answer": "June 24, 2024",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Exact match of date."
+    },
+    {
+      "question_id": 3,
+      "question": "Months between dates?",
+      "gt_answer": "Less than 4 months",
+      "llm_answer": "Less than 4 months",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers are identical."
+    },
+    {
+      "question_id": 4,
+      "question": "Score assigned?",
+      "gt_answer": "Score 2",
+      "llm_answer": "Score 2",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers are identical."
+    },
+    {
+      "question_id": 5,
+      "question": "Final score assigned?",
+      "gt_answer": "Score 2",
+      "llm_answer": "Score 2",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers are identical."
+    },
+    {
+      "question_id": 6,
+      "question": "Key ratio mentioned?",
+      "gt_answer": "85 days",
+      "llm_answer": "Score of 2",
+      "match": false,
+      "confidence": "high",
+      "reasoning": "The ground truth provides a duration of time (85 days), while the LLM answer gives a numerical score.  These are different types of information."
+    },
+    {
+      "question_id": 7,
+      "question": "Key date mentioned?",
+      "gt_answer": "June 24, 2024",
+      "llm_answer": "June 24, 2024",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Exact match of date."
+    },
+    {
+      "question_id": 8,
+      "question": "Main percentage stated?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'."
+    }
+  ]
+}

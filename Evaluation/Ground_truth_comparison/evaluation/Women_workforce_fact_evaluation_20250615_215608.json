@@ -1,0 +1,85 @@
+{
+  "evaluation_type": "ultra_short_facts",
+  "summary": {
+    "total_questions": 8,
+    "correct_facts": 8,
+    "accuracy_percentage": 100.0,
+    "timestamp": "2025-06-15T21:56:08.283660",
+    "pass_threshold": 70.0,
+    "result": "PASS"
+  },
+  "detailed_results": [
+    {
+      "question_id": 1,
+      "question": "Women workforce percentage?",
+      "gt_answer": "11.1% workforce",
+      "llm_answer": "11.1% workforce",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the same percentage of women in the workforce."
+    },
+    {
+      "question_id": 2,
+      "question": "Women employee count?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'"
+    },
+    {
+      "question_id": 3,
+      "question": "Total employee count?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'"
+    },
+    {
+      "question_id": 4,
+      "question": "Score assigned?",
+      "gt_answer": "Score 1",
+      "llm_answer": "Score 1",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the score is 1."
+    },
+    {
+      "question_id": 5,
+      "question": "Source page number?",
+      "gt_answer": "Page 96",
+      "llm_answer": "Page 96",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Exact match of the page number."
+    },
+    {
+      "question_id": 6,
+      "question": "Final score assigned?",
+      "gt_answer": "Score 1",
+      "llm_answer": "Score 1",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the score is 1.  This satisfies the Synonymous terms rule (Score 1 vs Score 1)."
+    },
+    {
+      "question_id": 7,
+      "question": "Key ratio mentioned?",
+      "gt_answer": "11.1% workforce women",
+      "llm_answer": "11.1% workforce",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both answers state the same percentage (11.1%).  The LLM answer omits the 'women' descriptor, but the core numerical fact is identical."
+    },
+    {
+      "question_id": 8,
+      "question": "Key date mentioned?",
+      "gt_answer": "Not specified",
+      "llm_answer": "Not specified",
+      "match": true,
+      "confidence": "high",
+      "reasoning": "Both the ground truth and the LLM answer are identical: 'Not specified'"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+Question_ID,Question,Ground_Truth,LLM_Answer,Match,Confidence,Reasoning
+1,Related party policy exists?,"Yes, policy documented.","Yes, policy exists.",✅,high,Both answers confirm the existence of a related party policy.  The slight difference in wording is insignificant.
+2,Policy comprehensive?,"Yes, well-defined policy","Yes, well-defined policy",✅,high,Both answers are identical and confirm the policy is comprehensive and well-defined.
+3,Policy well-defined?,"Yes, comprehensively defined.","Yes, comprehensively defined.",✅,high,Both answers are identical and confirm the policy is comprehensively defined.
+4,Score assigned?,Not specified,Not specified,✅,high,Both answers are identical and indicate a lack of specified information.
+5,Page number?,Pages 3 and 5,"Pages 2, 3, 5,",❌,high,The LLM answer includes an extra page number (page 2) not present in the ground truth.
+6,Final score assigned?,Not specified,Not specified,✅,high,Both answers are identical and indicate a lack of specified information.
+7,Key ratio mentioned?,Not specified,Not specified,✅,high,Both the ground truth and the LLM answer are identical: 'Not specified'.
+8,Key date mentioned?,Not specified,Not specified,✅,high,Both the ground truth and the LLM answer are identical: 'Not specified'
+SUMMARY,=== FINAL RESULTS ===,7/8,87.5% accurate,✅ PASS,Overall,Ultra-short fact accuracy: 87.5%

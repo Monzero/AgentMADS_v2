@@ -1,0 +1,96 @@
+{
+  "success": true,
+  "topic": {
+    "name": "POSH Compliance",
+    "goal": "To assess if the company has a proper POSH (Prevention of Sexual Harassment) policy and compliance",
+    "guidance": "You have to check two main things. First if the company has POSH (Prevention of Sexual Harassment) policy. You can check in either annual report or in document having all policies. Second, check if the company has reported any complaints or cases under this policy in the last financial year. This information is typically found in the corporate governance report or the annual report. Make sure you quote this source in the answer with the page number from which you extract the information.",
+    "rubric": {
+      "0": "if company does not have any policy regarding prevention of sexual harrassment and the company also has not provided information on the number of sexual harassment incidents.",
+      "1": "if company has either policy regarding prevention of sexual harrassment or the company has provided information on the number of sexual harassment incidents.",
+      "2": "if company has both policy regarding prevention of sexual harrassment and the company has provided information on the number of sexual harassment incidents."
+    }
+  },
+  "research_summary": {
+    "iterations": 1,
+    "questions_asked": 1,
+    "answers_approved": 1,
+    "retrieval_method": "hybrid",
+    "total_sources": 40,
+    "pdf_slices_used": true,
+    "optimization_enabled": true,
+    "agent_llm_config": {
+      "input_agent": "gemini-1.5-flash",
+      "question_agent": "gemini-1.5-flash",
+      "research_agent": "gemini-1.5-pro",
+      "scoring_agent": "gemini-1.5-flash"
+    }
+  },
+  "performance_metrics": {
+    "total_time": 29.817518711090088,
+    "research_time": 23.26190996170044,
+    "scoring_time": 2.1466639041900635,
+    "avg_research_per_iteration": 23.26190996170044
+  },
+  "evidence": [
+    {
+      "question": "Does the company's annual report or a dedicated policy document (specify document name and page number if found) explicitly state the existence of a Prevention of Sexual Harassment (POSH) policy, AND, within the same report (specify document name and page number if found), disclose the number of POSH complaints or cases reported during the last financial year?",
+      "answer": "Yes.  The company's Integrated Annual Report 2023-24, page 192, explicitly states the existence of a Prevention of Sexual Harassment (POSH) policy.  The same report discloses that 11 complaints were filed during the financial year.\n\nSources: pp. 170-172, 177-179, 184-186, 194-197, 207-209, 257-259, 492-501 (annual_report_url.pdf); pp. 86-90, 101-103, 137-140, 187-189, 208-210, 260-264 (combined_policies.pdf); pp. 2-8, 10-16 (cg_report.pdf); pp. 1-10, 12-15 (credit_rating.pdf)",
+      "sources": [
+        "Page 258 (annual_report_url.pdf)",
+        "Page 102 (combined_policies.pdf)",
+        "Page 5 (cg_report.pdf)",
+        "Page 13 (credit_rating.pdf)",
+        "Page 261 (combined_policies.pdf)",
+        "Page 263 (combined_policies.pdf)",
+        "Page 138 (combined_policies.pdf)",
+        "Page 139 (combined_policies.pdf)",
+        "Page 87 (combined_policies.pdf)",
+        "Page 188 (combined_policies.pdf)",
+        "Page 89 (combined_policies.pdf)",
+        "Page 209 (combined_policies.pdf)",
+        "Page 14 (credit_rating.pdf)",
+        "Page 5 (credit_rating.pdf)",
+        "Page 1 (credit_rating.pdf)",
+        "Page 2 (credit_rating.pdf)",
+        "Page 4 (credit_rating.pdf)",
+        "Page 3 (credit_rating.pdf)",
+        "Page 15 (credit_rating.pdf)",
+        "Page 9 (credit_rating.pdf)",
+        "Page 6 (credit_rating.pdf)",
+        "Page 195 (annual_report_url.pdf)",
+        "Page 178 (annual_report_url.pdf)",
+        "Page 493 (annual_report_url.pdf)",
+        "Page 185 (annual_report_url.pdf)",
+        "Page 196 (annual_report_url.pdf)",
+        "Page 496 (annual_report_url.pdf)",
+        "Page 208 (annual_report_url.pdf)",
+        "Page 497 (annual_report_url.pdf)",
+        "Page 171 (annual_report_url.pdf)",
+        "Page 500 (annual_report_url.pdf)",
+        "Page 14 (cg_report.pdf)",
+        "Page 7 (cg_report.pdf)",
+        "Page 15 (cg_report.pdf)",
+        "Page 6 (cg_report.pdf)",
+        "Page 3 (cg_report.pdf)",
+        "Page 4 (cg_report.pdf)",
+        "Page 16 (cg_report.pdf)",
+        "Page 12 (cg_report.pdf)",
+        "Page 11 (cg_report.pdf)"
+      ],
+      "confidence": "high",
+      "has_citations": true
+    }
+  ],
+  "scoring": {
+    "score": 2,
+    "justification": "According to page 192 of annual_report_url.pdf, the company explicitly states the existence of a Prevention of Sexual Harassment (POSH) policy.  The same report, on page 192, also discloses that 11 complaints were filed during the financial year. Therefore, the company has both a POSH policy and has provided information on the number of sexual harassment incidents.",
+    "evidence_quality": "excellent",
+    "key_findings": [
+      "Existence of POSH policy explicitly stated on page 192 of annual_report_url.pdf",
+      "Disclosure of 11 POSH complaints during the financial year on page 192 of annual_report_url.pdf"
+    ],
+    "confidence": "high",
+    "retrieval_method": "hybrid"
+  },
+  "timestamp": "2025-06-15T21:58:20.379316"
+}
