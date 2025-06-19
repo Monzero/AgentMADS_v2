@@ -1,15 +1,3 @@
-"""
-Fact-Based Answer Evaluator - FIXED VERSION
-===========================================
-
-A comprehensive evaluation system that uses LLM-based fact decomposition
-to objectively compare AgentEval outputs against ground truth responses.
-
-FIXED: 
-- Generates ultra-short questions (3-4 word answers max)
-- Saves results to ./data/evaluation/ directory
-"""
-
 import os
 import json
 import pandas as pd
