@@ -1,3 +1,15 @@
+"""
+Fact-Based Answer Evaluator - FIXED VERSION
+===========================================
+
+A comprehensive evaluation system that uses LLM-based fact decomposition
+to objectively compare AgentEval outputs against ground truth responses.
+
+FIXED: 
+- Generates ultra-short questions (3-4 word answers max)
+- Saves results to ./data/evaluation/ directory
+"""
+
 import os
 import json
 import pandas as pd
@@ -287,14 +299,15 @@ class FactBasedEvaluator:
         os.makedirs(self.eval_dir, exist_ok=True)
         
     def evaluate(
-        self, 
-        topic_definition: str, 
-        scoring_rubric: str, 
-        ground_truth: str, 
-        llm_output: str
-    ) -> FactEvaluationSummary:
+    self, 
+    topic_definition: str, 
+    scoring_rubric: str, 
+    ground_truth: str, 
+    llm_output: str
+) -> FactEvaluationSummary:
         """
         Perform complete ultra-short fact-based evaluation
+        UPDATED: Ignores questions without ground truth answers in accuracy calculation
         """
         
         print("🔍 Generating ultra-short questions (3-4 word answers)...")
@@ -336,73 +349,132 @@ class FactBasedEvaluator:
                 reasoning=comparison_result["reasoning"]
             ))
         
-        # Calculate final accuracy
-        correct_facts = sum(1 for result in evaluation_results if result.match)
-        accuracy_percentage = (correct_facts / len(evaluation_results)) * 100
+        # UPDATED: Filter out questions without ground truth answers before calculating accuracy
+        # Define indicators for unavailable ground truth answers
+        unavailable_indicators = {
+            "not specified", "not available", "not found", "not mentioned", 
+            "not disclosed", "not provided", "no information", "unknown",
+            "n/a", "na", "nil", "none", "not applicable"
+        }
         
-        print(f"\n📊 EVALUATION COMPLETE: {correct_facts}/{len(evaluation_results)} correct ({accuracy_percentage:.1f}%)")
+        # Filter results to only include questions with available ground truth
+        valid_results = []
+        excluded_count = 0
+        
+        for result in evaluation_results:
+            gt_lower = result.gt_answer.lower().strip()
+            
+            # Check if ground truth answer indicates unavailable information
+            if gt_lower in unavailable_indicators:
+                excluded_count += 1
+                print(f"   ⚠️  Excluding question '{result.question}' - GT answer: '{result.gt_answer}'")
+            else:
+                valid_results.append(result)
+        
+        # Calculate accuracy only on questions with available ground truth
+        if valid_results:
+            correct_facts = sum(1 for result in valid_results if result.match)
+            accuracy_percentage = (correct_facts / len(valid_results)) * 100
+            
+            print(f"\n📊 EVALUATION COMPLETE:")
+            print(f"   Total questions generated: {len(evaluation_results)}")
+            print(f"   Questions with available GT: {len(valid_results)}")
+            print(f"   Questions excluded (no GT): {excluded_count}")
+            print(f"   Correct answers: {correct_facts}/{len(valid_results)}")
+            print(f"   Accuracy: {accuracy_percentage:.1f}%")
+        else:
+            print(f"\n⚠️  WARNING: No questions with available ground truth answers found!")
+            correct_facts = 0
+            accuracy_percentage = 0.0
         
         return FactEvaluationSummary(
-            total_questions=len(evaluation_results),
+            total_questions=len(valid_results),  # Only count questions with GT
             correct_facts=correct_facts,
             accuracy_percentage=accuracy_percentage,
-            evaluation_results=evaluation_results,
+            evaluation_results=evaluation_results,  # Keep all results for detailed view
             timestamp=datetime.now().isoformat()
         )
-    
+
     def save_results(self, summary: FactEvaluationSummary, filename: str = None):
-        """FIXED: Save evaluation results to ./data/evaluation/ directory"""
+        """UPDATED: Save evaluation results with clear indication of excluded questions"""
         
         if filename is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"fact_evaluation_{timestamp}"
         
-        # FIXED: Use evaluation directory
         csv_path = os.path.join(self.eval_dir, f"{filename}.csv")
         json_path = os.path.join(self.eval_dir, f"{filename}.json")
         
-        # Prepare data for CSV
+        # Define unavailable indicators for consistent marking
+        unavailable_indicators = {
+            "not specified", "not available", "not found", "not mentioned", 
+            "not disclosed", "not provided", "no information", "unknown",
+            "n/a", "na", "nil", "none", "not applicable"
+        }
+        
+        # Prepare data for CSV with exclusion indicators
         csv_data = []
+        valid_count = 0
+        excluded_count = 0
+        
         for i, result in enumerate(summary.evaluation_results, 1):
+            gt_lower = result.gt_answer.lower().strip()
+            is_excluded = gt_lower in unavailable_indicators
+            
+            if is_excluded:
+                excluded_count += 1
+                status = "🚫 EXCLUDED"
+                match_display = "N/A"
+            else:
+                valid_count += 1
+                status = "✅ INCLUDED"
+                match_display = "✅" if result.match else "❌"
+            
             csv_data.append({
                 "Question_ID": i,
+                "Status": status,
                 "Question": result.question,
                 "Ground_Truth": result.gt_answer,
                 "LLM_Answer": result.llm_answer,
-                "Match": "✅" if result.match else "❌",
-                "Confidence": result.confidence,
-                "Reasoning": result.reasoning
+                "Match": match_display,
+                "Confidence": result.confidence if not is_excluded else "N/A",
+                "Reasoning": result.reasoning if not is_excluded else "No ground truth available"
             })
         
         # Add summary row
         csv_data.append({
             "Question_ID": "SUMMARY",
-            "Question": "=== FINAL RESULTS ===",
+            "Status": "=== FINAL RESULTS ===",
+            "Question": f"Valid Questions: {valid_count}, Excluded: {excluded_count}",
             "Ground_Truth": f"{summary.correct_facts}/{summary.total_questions}",
             "LLM_Answer": f"{summary.accuracy_percentage:.1f}% accurate",
             "Match": "✅ PASS" if summary.accuracy_percentage >= 70 else "❌ FAIL",
             "Confidence": "Overall",
-            "Reasoning": f"Ultra-short fact accuracy: {summary.accuracy_percentage:.1f}%"
+            "Reasoning": f"Accuracy calculated on {summary.total_questions} questions with available ground truth"
         })
         
         # Save CSV
         df = pd.DataFrame(csv_data)
         df.to_csv(csv_path, index=False)
         
-        # Save detailed JSON
+        # Save detailed JSON with exclusion information
         json_data = {
             "evaluation_type": "ultra_short_facts",
             "summary": {
-                "total_questions": summary.total_questions,
+                "total_questions_generated": len(summary.evaluation_results),
+                "questions_with_ground_truth": summary.total_questions,
+                "questions_excluded": excluded_count,
                 "correct_facts": summary.correct_facts,
                 "accuracy_percentage": summary.accuracy_percentage,
                 "timestamp": summary.timestamp,
                 "pass_threshold": 70.0,
-                "result": "PASS" if summary.accuracy_percentage >= 70 else "FAIL"
+                "result": "PASS" if summary.accuracy_percentage >= 70 else "FAIL",
+                "exclusion_criteria": list(unavailable_indicators)
             },
             "detailed_results": [
                 {
                     "question_id": i,
+                    "included_in_accuracy": result.gt_answer.lower().strip() not in unavailable_indicators,
                     "question": result.question,
                     "gt_answer": result.gt_answer,
                     "llm_answer": result.llm_answer,
@@ -422,11 +494,11 @@ class FactBasedEvaluator:
         print(f"   JSON: {json_path}")
         
         return csv_path, json_path
-
+    
+    
 def main():
     """Example usage of the ultra-short fact-based evaluator"""
     
-    # Example data
     topic_definition = """
      Question: POSH policy compliance
     
@@ -451,6 +523,8 @@ This indicates that the company has publicly disclosed both its POSH policy and 
     llm_output = """
     According to page 192 of annual_report_url.pdf, the company explicitly states the existence of a Prevention of Sexual Harassment (POSH) policy.  The same report, on page 192, also discloses that 11 complaints were filed during the financial year. Therefore, the company has both a POSH policy and has provided information on the number of sexual harassment incidents. Hence score 2 is given.
     """
+
+
     
     # Initialize evaluator
     evaluator = FactBasedEvaluator(
@@ -581,7 +655,7 @@ if __name__ == "__main__":
     
 #     Topic: Board Independence
 #     Goal: To assess if the board have directors with permanent board seats
-#     Guidance: You need to look for the corporate governance report. Find the reappointment date for each board members. If the reappointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. In other words, either of appointment date or reappointment date should be within last 5 years. For example, if a board member has appointment date '02-07-2020' and reappointment date is not present, then because the appointment date is within last 5 years (i.e March 2020 to March 2025 assuming we are checking for annual report as of 31st March 2025) then we would label them as 'Not permanent'. Second example, if any board member has appointment date as 01-01-2012 and reappointment date not present, then we would mark them permanent. Do not present output in table format. Give me text based paragraphs. You are looking at the corporate governance report as of 31st March 2024. Make sure you quote this source in the answer with the page number from which you extract the information.
+#     Guidance: You need to look for the corporate governance report. Find the reappointment date for each board members. If the reappointment date is either not provided or older than 5 years (i.e some date before 2019), then you need to check appointment date. If appointment date is also older than 5 years (i.e before 2019), mark that board member as permanent. Give list of board members and whether or not they are permanent. 
 #     """
     
 #     scoring_rubric = """
@@ -601,3 +675,33 @@ if __name__ == "__main__":
 #     According to page 235 of annual_report_url.pdf, and corroborated by page 17 of the same document, there are several board members whose appointment or most recent reappointment date precedes March 31st, 2019.  These individuals are not explicitly identified as representatives of lenders.  Furthermore, page 147 of annual_report_url.pdf specifically mentions Mr. Om Prakash Bhatt, whose most recent appointment was before March 31st, 2019, and he is not a lender representative. The presence of these board members, whose appointments predate the 5-year threshold and who are not lender representatives, automatically results in a score of 0 according to the provided scoring rubric.
 #     """
   
+##################.  POSH policy compliance  ################## 
+  
+  
+#    # Example data
+#     topic_definition = """
+#      Question: POSH policy compliance
+    
+#     Topic: POSH policy compliance
+#     Goal: To assess if the company has a proper POSH (Prevention of Sexual Harassment) policy and compliance
+#     Guidance: You have to check two main things. First if the company has POSH (Prevention of Sexual Harassment) policy. You can check in either annual report or in document having all policies. Second, check if the company has reported any complaints or cases under this policy in the last financial year. This information is typically found in the corporate governance report or the annual report. Make sure you quote this source in the answer with the page number from which you extract the information.
+#     """
+    
+#     scoring_rubric = """
+#         Score 0: "if company does not have any policy regarding prevention of sexual harrassment and the company also has not provided information on the number of sexual harassment incidents.",
+#         Score 1: "if company has either policy regarding prevention of sexual harrassment or the company has provided information on the number of sexual harassment incidents.",
+#         Score 2: "if company has both policy regarding prevention of sexual harrassment and the company has provided information on the number of sexual harassment incidents."
+
+#     """
+    
+#     ground_truth = """
+#     According to page 192 of annual_report_url.pdf, the company explicitly confirms the existence of a Prevention of Sexual Harassment (POSH) policy. The same page also reports that 11 complaints related to sexual harassment were filed during the financial year.
+# This indicates that the company has publicly disclosed both its POSH policy and the number of incidents, satisfying the criteria for the score 2 under the relevant evaluation rubric.
+#     """
+    
+    
+#     llm_output = """
+#     According to page 192 of annual_report_url.pdf, the company explicitly states the existence of a Prevention of Sexual Harassment (POSH) policy.  The same report, on page 192, also discloses that 11 complaints were filed during the financial year. Therefore, the company has both a POSH policy and has provided information on the number of sexual harassment incidents. Hence score 2 is given.
+#     """
+    
+ 
