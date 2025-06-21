@@ -1,0 +1,10 @@
+Question_ID,Status,Question,Ground_Truth,LLM_Answer,Match,Confidence,Reasoning
+1,✅ INCLUDED,POSH policy existence?,POSH policy confirmed,POSH policy exists,✅,high,Both answers convey the same information: a POSH policy is in effect.
+2,✅ INCLUDED,POSH policy page number?,Page 192,Page 192,✅,high,Both answers provide the same page number.
+3,✅ INCLUDED,Sexual harassment complaints?,11 complaints filed,11 complaints filed,✅,high,Exact match between ground truth and LLM answer.
+4,✅ INCLUDED,Complaint count (last year)?,11 complaints filed,11 complaints filed,✅,high,Exact match of the ground truth.
+5,✅ INCLUDED,Score assigned?,Score 2,Score 2,✅,high,Both answers are identical.
+6,✅ INCLUDED,Final score assigned?,Score 2,Score 2,✅,high,Both answers state the score was 2.  This is an exact match.
+7,✅ INCLUDED,Key ratio mentioned?,11 complaints filed,Score 2,❌,high,"The ground truth provides a numerical fact (number of complaints), while the LLM answer mentions a score.  These are not synonymous or comparable."
+8,🚫 EXCLUDED,Key date mentioned?,Not specified,Not specified,N/A,N/A,No ground truth available
+SUMMARY,=== FINAL RESULTS ===,"Valid Questions: 7, Excluded: 1",6/7,85.7% accurate,✅ PASS,Overall,Accuracy calculated on 7 questions with available ground truth
